@@ -1,0 +1,7 @@
+.git*
+[Dd]ocker*
+functions
+kubernetes
+vendor
+storage
+testdata

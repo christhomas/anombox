@@ -1,0 +1,37 @@
+version: '3.4'
+
+networks:
+  backbone:
+    external:
+      name: backbone
+
+services:
+  phpfpm:
+    build:
+      context:    .
+      dockerfile: deploy/phpfpm/Dockerfile
+      cache_from:
+        - advertiser-settings-service/phpfpm
+    networks:
+      backbone:
+        aliases:
+          - anombox_phpfpm
+    env_file:
+      - deploy/env/development
+      - deploy/env/xdebug
+    volumes:
+      - ./:/www:rw,cached
+
+  nginx:
+    build:
+      context: .
+      dockerfile: deploy/nginx/Dockerfile
+    networks:
+      backbone:
+    depends_on:
+      - phpfpm
+    volumes:
+      - ./public:/www/public:ro
+    environment:
+      - VIRTUAL_HOST=api.antimatter-studios.develop
+      - VIRTUAL_PATH=^/anombox/v1

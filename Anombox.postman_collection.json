@@ -1,0 +1,544 @@
+{
+	"info": {
+		"_postman_id": "b65caffd-39c5-41d1-b093-be6f311d5c15",
+		"name": "Anombox",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "cors",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7fdc24c2-188d-4833-bcf0-caf321c4647a",
+						"exec": [
+							"try{",
+							"    let json = pm.response.json();",
+							"    ",
+							"    switch(pm.environment.name){",
+							"        case \"Plista REST Staging\":",
+							"            env_name = \"staging\";",
+							"            break;",
+							"        case \"Plista REST Production\":",
+							"            env_name = \"prod\";",
+							"            break;",
+							"        case \"Plista REST Dev\":",
+							"            env_name = \"dev\";",
+							"            break;",
+							"        default:",
+							"            env_name = \"plista\";",
+							"            break;",
+							"    }",
+							"    ",
+							"    pm.globals.set(`${env_name}.notifications_auth_key`, json.auth_key);",
+							"",
+							"}catch(error){",
+							"    console.log(\"Response did not contain the correct data\");",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "OPTIONS",
+				"header": [
+					{
+						"key": "origin",
+						"value": "somewhere.antimatter-studios.develop",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "api.antimatter-studios.develop/anombox/v1",
+					"host": [
+						"api",
+						"antimatter-studios",
+						"develop"
+					],
+					"path": [
+						"anombox",
+						"v1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send image",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "da1f08dc-1690-407b-ac77-c4ab6f20c5f3",
+						"exec": [
+							"try{",
+							"    let json = pm.response.json();",
+							"    ",
+							"    switch(pm.environment.name){",
+							"        case \"Plista REST Staging\":",
+							"            env_name = \"staging\";",
+							"            break;",
+							"        case \"Plista REST Production\":",
+							"            env_name = \"prod\";",
+							"            break;",
+							"        case \"Plista REST Dev\":",
+							"            env_name = \"dev\";",
+							"            break;",
+							"        default:",
+							"            env_name = \"plista\";",
+							"            break;",
+							"    }",
+							"    ",
+							"    pm.globals.set(`${env_name}.notifications_auth_key`, json.auth_key);",
+							"",
+							"}catch(error){",
+							"    console.log(\"Response did not contain the correct data\");",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{anombox.token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "video",
+							"type": "file",
+							"src": "/Users/chris/Documents/chris.halloween.png"
+						}
+					],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "api.antimatter-studios.develop/anombox/v1/upload",
+					"host": [
+						"api",
+						"antimatter-studios",
+						"develop"
+					],
+					"path": [
+						"anombox",
+						"v1",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send small video",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e975e8ab-7533-4ef6-80f6-2db5efed4e1f",
+						"exec": [
+							"try{",
+							"    let json = pm.response.json();",
+							"    ",
+							"    switch(pm.environment.name){",
+							"        case \"Plista REST Staging\":",
+							"            env_name = \"staging\";",
+							"            break;",
+							"        case \"Plista REST Production\":",
+							"            env_name = \"prod\";",
+							"            break;",
+							"        case \"Plista REST Dev\":",
+							"            env_name = \"dev\";",
+							"            break;",
+							"        default:",
+							"            env_name = \"plista\";",
+							"            break;",
+							"    }",
+							"    ",
+							"    pm.globals.set(`${env_name}.notifications_auth_key`, json.auth_key);",
+							"",
+							"}catch(error){",
+							"    console.log(\"Response did not contain the correct data\");",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{anombox.token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "video",
+							"type": "file",
+							"src": "/Users/chris/projects/anombox/storage/2020-01-21-broken-email-validation.mov"
+						}
+					],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "api.antimatter-studios.develop/anombox/v1/upload",
+					"host": [
+						"api",
+						"antimatter-studios",
+						"develop"
+					],
+					"path": [
+						"anombox",
+						"v1",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send >100M video",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "86280e18-ad13-4c01-9f29-0964421b27f9",
+						"exec": [
+							"try{",
+							"    let json = pm.response.json();",
+							"    ",
+							"    switch(pm.environment.name){",
+							"        case \"Plista REST Staging\":",
+							"            env_name = \"staging\";",
+							"            break;",
+							"        case \"Plista REST Production\":",
+							"            env_name = \"prod\";",
+							"            break;",
+							"        case \"Plista REST Dev\":",
+							"            env_name = \"dev\";",
+							"            break;",
+							"        default:",
+							"            env_name = \"plista\";",
+							"            break;",
+							"    }",
+							"    ",
+							"    pm.globals.set(`${env_name}.notifications_auth_key`, json.auth_key);",
+							"",
+							"}catch(error){",
+							"    console.log(\"Response did not contain the correct data\");",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{anombox.token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "video",
+							"type": "file",
+							"src": "/Users/chris/projects/anombox/storage/2019-02-03-Movie-on_06.04.18_at-22.44.mov"
+						}
+					],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "api.antimatter-studios.develop/anombox/v1/upload",
+					"host": [
+						"api",
+						"antimatter-studios",
+						"develop"
+					],
+					"path": [
+						"anombox",
+						"v1",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send incorrect filename",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b1fdf3a8-4b5f-47d8-be54-c0f29922033c",
+						"exec": [
+							"try{",
+							"    let json = pm.response.json();",
+							"    ",
+							"    switch(pm.environment.name){",
+							"        case \"Plista REST Staging\":",
+							"            env_name = \"staging\";",
+							"            break;",
+							"        case \"Plista REST Production\":",
+							"            env_name = \"prod\";",
+							"            break;",
+							"        case \"Plista REST Dev\":",
+							"            env_name = \"dev\";",
+							"            break;",
+							"        default:",
+							"            env_name = \"plista\";",
+							"            break;",
+							"    }",
+							"    ",
+							"    pm.globals.set(`${env_name}.notifications_auth_key`, json.auth_key);",
+							"",
+							"}catch(error){",
+							"    console.log(\"Response did not contain the correct data\");",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{anombox.token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "video",
+							"type": "file",
+							"src": "/Volumes/sdcard400gb/Movie on 06.04.18 at 22.44.mov"
+						}
+					],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "api.antimatter-studios.develop/anombox/v1/upload",
+					"host": [
+						"api",
+						"antimatter-studios",
+						"develop"
+					],
+					"path": [
+						"anombox",
+						"v1",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send correct filename (but is too small)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7b64ee0c-9955-46f1-a262-0a9fee2b4704",
+						"exec": [
+							"try{",
+							"    let json = pm.response.json();",
+							"    ",
+							"    switch(pm.environment.name){",
+							"        case \"Plista REST Staging\":",
+							"            env_name = \"staging\";",
+							"            break;",
+							"        case \"Plista REST Production\":",
+							"            env_name = \"prod\";",
+							"            break;",
+							"        case \"Plista REST Dev\":",
+							"            env_name = \"dev\";",
+							"            break;",
+							"        default:",
+							"            env_name = \"plista\";",
+							"            break;",
+							"    }",
+							"    ",
+							"    pm.globals.set(`${env_name}.notifications_auth_key`, json.auth_key);",
+							"",
+							"}catch(error){",
+							"    console.log(\"Response did not contain the correct data\");",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{anombox.token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "video",
+							"type": "file",
+							"src": "/Users/chris/projects/anombox/storage/2020-10-12-abcdef-halloween.png"
+						}
+					],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "api.antimatter-studios.develop/anombox/v1/upload",
+					"host": [
+						"api",
+						"antimatter-studios",
+						"develop"
+					],
+					"path": [
+						"anombox",
+						"v1",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get files",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9d4aa3a3-43b0-44cb-ba5c-870ec63a6313",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{anombox.token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "api.antimatter-studios.develop/anombox/v1/list",
+					"host": [
+						"api",
+						"antimatter-studios",
+						"develop"
+					],
+					"path": [
+						"anombox",
+						"v1",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "75b713ef-da3b-494e-87a2-36a8e3876d28",
+						"exec": [
+							"try{",
+							"    let json = pm.response.json();",
+							"    ",
+							"    pm.globals.set(\"anombox.token\", json.token);",
+							"",
+							"}catch(error){",
+							"    console.log(\"Response did not contain the correct data\");",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "chris",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "2hd83bfkwndp",
+							"type": "text"
+						}
+					],
+					"options": {
+						"urlencoded": {}
+					}
+				},
+				"url": {
+					"raw": "api.antimatter-studios.develop/anombox/v1/login",
+					"host": [
+						"api",
+						"antimatter-studios",
+						"develop"
+					],
+					"path": [
+						"anombox",
+						"v1",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

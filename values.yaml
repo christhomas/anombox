@@ -1,0 +1,9 @@
+name: "anombox"
+
+storage_size: 100Gi
+
+access_control:
+  - username: chris
+    password: thomas
+  - username: agnus
+    password: tam

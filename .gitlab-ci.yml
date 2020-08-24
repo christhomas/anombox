@@ -1,0 +1,22 @@
+image: christhomas/pipeline-deployer:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - docker info
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://localhost:2375
+
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  script:
+    - echo ${CI_KUBECONFIG} | base64 -d > $PWD/kubeconfig
+    - export KUBECONFIG=$PWD/kubeconfig
+    - kubectl get pods --all-namespaces
+    - helm template -f $PWD/values.yaml $PWD/kubernetes | kubectl apply -f -
