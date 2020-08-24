@@ -38,7 +38,7 @@
     "prefer-stable": true,
     "scripts": {
         "post-autoload-dump": [
-            "@php -r \"file_exists('deploy/env/development') || copy('deploy/env/development.dist', 'deploy/env/development');\""
+            "./setup.sh"
         ]
     }
 }
