@@ -37,8 +37,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        "post-autoload-dump": [
+            "@php -r \"file_exists('deploy/env/development') || copy('deploy/env/development.dist', 'deploy/env/development');\""
         ]
     }
 }
