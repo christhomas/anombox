@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "{{ .Values.name }}"
+  namespace: {{ .Values.name }}
+spec:
+  serviceName: {{ .Values.name }}
+  replicas: 1
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ .Values.name }}-storage
+        namespace: {{ .Values.name }}
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.storage_size | quote }}
+        selector:
+          matchLabels:
+            volume-name: {{ .Values.name }}-storage
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      nodeSelector:
+        anombox: "true"
+      containers:
+        - name: anombox-nginx
+          image: {{ .Values.docker.nginx }}
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.name }}
+          ports:
+            - name: nginx
+              protocol: TCP
+              containerPort: 80
+        - name: anombox-phpfpm
+          image: {{ .Values.docker.phpfpm }}
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.name }}
+          volumeMounts:
+            - name: {{ .Values.name }}-storage
+              mountPath: /www/storage/app
+          ports:
+            - name: phpfpm
+              protocol: TCP
+              containerPort: 9000
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.name }}
+spec:
+  selector:
+    app: {{ .Values.name }}
+  ports:
+    - port: 80
+      targetPort: nginx
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.name }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 2000m
+spec:
+  tls:
+    - secretName: "antimatter-studios/tls-antimatter-studios-com"
+      hosts:
+        - "{{ .Values.url }}"
+  rules:
+    - host: "{{ .Values.url }}"
+      http:
+        paths:
+          - path: /anombox/v1
+            pathType: Prefix
+            backend:
+              serviceName: {{ .Values.name }}
+              servicePort: 80

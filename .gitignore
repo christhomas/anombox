@@ -6,3 +6,4 @@ storage/app/*
 !storage/**/.gitignore
 deploy/env/*
 !deploy/env/*.dist
+.DS_Store

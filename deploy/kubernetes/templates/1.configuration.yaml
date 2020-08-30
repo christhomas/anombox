@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.name }}
+data:
+  APP_NAME: {{ .Values.name | quote }}
+  APP_ENV: "prod"
+  APP_KEY: "abcdef"
+  APP_DEBUG: {{ .Values.debug | quote }}
+  APP_URL: {{ .Values.full_url | quote }}
+  APP_TIMEZONE: {{ .Values.timezone | quote }}
+  PHPFPM_HOST: localhost
+
+  CACHE_DRIVER: "file"
+  QUEUE_CONNECTION: "sync"
+
+  CORS_ALLOWED: {{ .Values.cors.allowed | quote }}
+  CORS_DEFAULT: {{ .Values.cors.default | quote }}
+
+  FILE_MINIMUM_SIZE: {{ .Values.file.minimum_size | quote }}
+  FILE_MAXIMUM_SIZE: {{ .Values.file.maximum_size | quote }}
+  FILE_REGEX_PATTERN: {{ .Values.file.regex_pattern | b64enc | quote }}
+  ACCESS_CONTROL: {{ .Values.access_control | toJson | b64enc | quote }}
+---

@@ -50,6 +50,9 @@ class Controller extends BaseController
     public function upload(Request $request)
     {
         $file = $request->file('video');
+        $article = $request->post('article');
+        $section = $request->post('section');
+        $language = $request->post('language');
 
         // CHECK FILE EXISTS
         if (!$file) {
@@ -57,11 +60,11 @@ class Controller extends BaseController
         }
 
         // CHECK NAME OF FILE MATCHES CRITERIA
-        $filename = $file->getClientOriginalName();
-        $regex = config('video.regexPattern');
-        if($regex && !preg_match('/'.$regex.'/', $filename)){
-            abort(400, "File did not match requested pattern for name");
-        }
+//        $filename = $file->getClientOriginalName();
+//        $regex = config('video.regexPattern');
+//        if($regex && !preg_match('/'.$regex.'/', $filename)){
+//            abort(400, "File did not match requested pattern for name");
+//        }
 
         // CHECK FILE HAS A MINIMUM SIZE
         $minimumFileSize = config('video.minimumFileSize');
@@ -69,17 +72,28 @@ class Controller extends BaseController
             abort(400, "File was too small");
         }
 
+        // CHECK FILE HAS A MAXIMUM SIZE
+        $maximumFileSize = config('video.maximumFileSize');
+        if($maximumFileSize > 0 && $file->getSize() > $maximumFileSize){
+            abort(400, "File was too large");
+        }
+
         // CHECK BASIC MIME TYPE CHECKS
         if (!preg_match('/video\/*/', $file->getMimeType())){
             abort(400, "File was not a movie");
         }
 
+        $filename = "a{$article}";
+        if(!empty($section)) $filename = "{$filename}_s{$section}";
+        $filename = "{$filename}_$language";
+
         $suffix = bin2hex(random_bytes(4));
         $extension = $file->getClientOriginalExtension();
-        $filename = explode(".", $filename);
-        array_pop($filename);
-        array_push($filename,$suffix,$extension);
-        $filename = implode(".", $filename);
+//        $filename = explode(".", $filename);
+//        array_pop($filename);
+//        array_push($filename,$suffix,$extension);
+//        $filename = implode(".", $filename);
+        $filename = "$filename.$suffix.$extension";
 
         $file = $file->move("/www/storage/app", $filename);
 

@@ -15,6 +15,7 @@ CORS_ALLOWED=".antimatter-studios."
 CORS_DEFAULT="https://www.antimatter-studios.com"
 
 FILE_MINIMUM_SIZE=100000000
+FILE_MAXIMUM_SIZE=200000000
 FILE_REGEX_PATTERN="^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9A-Za-z\-\_]+"
 
 ACCESS_CONTROL="[{\"username\":\"user1\",\"password\":\"password1\"},{\"username\":\"user2\",\"password\":\"password2\"}]"

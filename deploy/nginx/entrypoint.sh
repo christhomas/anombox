@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DEFAULT_PHPFPM_HOST=anombox_phpfpm
+DEFAULT_PHPFPM_HOST=anombox-phpfpm
 [ -z "${PHPFPM_HOST}" ] && echo "PHPFPM_HOST missing, setting to default '${DEFAULT_PHPFPM_HOST}'" && export -p PHPFPM_HOST=${DEFAULT_PHPFPM_HOST}
 [ -z "${PHPFPM_PORT}" ] && echo "PHPFPM_PORT missing, setting to default '9000'" && export -p PHPFPM_PORT=9000
 

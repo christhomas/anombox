@@ -1,4 +1,22 @@
-name: "anombox"
+name: anombox
+debug: true
+full_url: http://antimatter-studios.com/anombox/v1
+timezone: UTC
+
+cors:
+  allowed: https://wirfuerhongkong.org
+  default: https://wirfuerhongkong.org
+
+file:
+  minimum_size: "5000000"
+  maximum_size: "200000000"
+  regex_pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9A-Za-z\-\_]+
+
+docker:
+  nginx: christhomas/anombox_nginx:latest
+  phpfpm: christhomas/anombox_phpfpm:latest
+
+url: antimatter-studios.com
 
 storage_size: 100Gi
 
@@ -7,3 +25,4 @@ access_control:
     password: thomas
   - username: agnus
     password: tam
+

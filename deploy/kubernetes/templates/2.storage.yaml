@@ -2,16 +2,16 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   # persistent volumes should be prefixed with the namespace because they are cluster wide
-  # so this makes it easy to idenfiy them
-  name: {{ .Values.name }}-minio
+  # so this makes it easy to identify them
+  name: {{ .Values.name }}-storage
   namespace: {{ .Values.name }}
   labels:
-    volume-name: {{ .Values.name }}-{{ .Values.name }}
+    volume-name: {{ .Values.name }}-storage
 spec:
   accessModes: [ "ReadWriteOnce" ]
   capacity:
-    storage: "{{ .Values.storage_size }}"
+    storage: {{ .Values.storage_size | quote }}
   hostPath:
     # paths should also be prefixed, because it's a "shared namespace"
-    path: /mnt/kubernetes/{{ .Values.name }}
+    path: /mnt/kubernetes/{{ .Values.name }}-storage
 ---

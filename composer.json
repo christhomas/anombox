@@ -38,7 +38,8 @@
     "prefer-stable": true,
     "scripts": {
         "post-autoload-dump": [
-            "@php -r \"file_exists('deploy/env/development') || copy('deploy/env/development.dist', 'deploy/env/development');\""
+            "@php -r \"file_exists('deploy/env/development') || copy('deploy/env/development.dist', 'deploy/env/development');\"",
+            "@php -r \"file_exists('deploy/env/xdebug') || copy('deploy/env/xdebug.dist', 'deploy/env/xdebug');\""
         ]
     }
 }

@@ -3,5 +3,6 @@
 functions
 kubernetes
 vendor
-storage
+storage/app/*
+!storage/**/.gitignore
 testdata
