@@ -8,7 +8,7 @@ cors:
   default: https://wirfuerhongkong.org
 
 file:
-  minimum_size: "5000000"
+  minimum_size: "1000000"
   maximum_size: "200000000"
   regex_pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9A-Za-z\-\_]+
 
@@ -22,7 +22,7 @@ storage_size: 100Gi
 
 access_control:
   - username: chris
-    password: thomas
+    password: d1dde346bcf0dbc8cb17b15dd5f7b20fb474db75
   - username: agnus
-    password: tam
+    password: dc1d4b8491ad555e267e086c7fbf23fbe920a738
 
