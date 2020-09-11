@@ -10,12 +10,10 @@ services:
     build:
       context:    .
       dockerfile: deploy/phpfpm/Dockerfile
-      cache_from:
-        - advertiser-settings-service/phpfpm
     networks:
       backbone:
         aliases:
-          - anombox_phpfpm
+          - anombox-phpfpm
     env_file:
       - deploy/env/development
       - deploy/env/xdebug
@@ -33,5 +31,5 @@ services:
     volumes:
       - ./public:/www/public:ro
     environment:
-      - VIRTUAL_HOST=api.antimatter-studios.develop
+      - VIRTUAL_HOST=antimatter-studios.develop
       - VIRTUAL_PATH=^/anombox/v1
