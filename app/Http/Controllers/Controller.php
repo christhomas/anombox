@@ -24,8 +24,8 @@ class Controller extends BaseController
         $password = $request->get('password');
 
         foreach(config('auth.users') as $user){
-            if($user->username !== $username) continue;
-            if($user->password !== sha1($password)) continue;
+            if($user['username'] !== $username) continue;
+            if($user['password'] !== sha1($password)) continue;
 
             if(empty(session_id())){
                 session_start();
@@ -50,14 +50,35 @@ class Controller extends BaseController
     public function upload(Request $request)
     {
         $file = $request->file('video');
-        $article = $request->post('article');
-        $section = $request->post('section');
-        $language = $request->post('language');
 
         // CHECK FILE EXISTS
         if (!$file) {
+            error_log("http/400: file was missing");
             abort(400, "File was missing");
         }
+
+        $data = [
+            'src_name'  => $file->getClientOriginalName(),
+            'dst_name'  => '',
+            'size'      => $file->getSize(),
+            'extension' => $file->getClientOriginalExtension(),
+            'type'      => $file->getMimeType(),
+            'article'   => $request->post('article'),
+            'section'   => $request->post('section'),
+            'language'  => trim($request->post('language')),
+        ];
+
+        $filename = "a{$data['article']}";
+        if(!empty($data['section'])) $filename = "{$filename}_s{$data['section']}";
+        $filename = "{$filename}_{$data['language']}";
+
+        $suffix = bin2hex(random_bytes(4));
+        $extension = $data['extension'];
+        $filename = "$filename.$suffix.$extension";
+
+        $data['dst_name'] = $filename;
+
+        error_log("incoming upload: ".json_encode($data));
 
         // CHECK NAME OF FILE MATCHES CRITERIA
 //        $filename = $file->getClientOriginalName();
@@ -68,32 +89,23 @@ class Controller extends BaseController
 
         // CHECK FILE HAS A MINIMUM SIZE
         $minimumFileSize = config('video.minimumFileSize');
-        if ($file->getSize() < $minimumFileSize) {
+        if ($data['size'] < $minimumFileSize) {
+            error_log("http/400: file was too small");
             abort(400, "File was too small");
         }
 
         // CHECK FILE HAS A MAXIMUM SIZE
         $maximumFileSize = config('video.maximumFileSize');
-        if($maximumFileSize > 0 && $file->getSize() > $maximumFileSize){
+        if($maximumFileSize > 0 && $data['size'] > $maximumFileSize){
+            error_log("http/400: file was too large");
             abort(400, "File was too large");
         }
 
         // CHECK BASIC MIME TYPE CHECKS
-        if (!preg_match('/video\/*/', $file->getMimeType())){
+        if (!preg_match('/video\/*/', $data['type'])){
+            error_log("http/400: file was not a movie");
             abort(400, "File was not a movie");
         }
-
-        $filename = "a{$article}";
-        if(!empty($section)) $filename = "{$filename}_s{$section}";
-        $filename = "{$filename}_$language";
-
-        $suffix = bin2hex(random_bytes(4));
-        $extension = $file->getClientOriginalExtension();
-//        $filename = explode(".", $filename);
-//        array_pop($filename);
-//        array_push($filename,$suffix,$extension);
-//        $filename = implode(".", $filename);
-        $filename = "$filename.$suffix.$extension";
 
         $file = $file->move("/www/storage/app", $filename);
 
@@ -104,7 +116,63 @@ class Controller extends BaseController
 
     public function list(Request $request)
     {
-        return new \Illuminate\Http\JsonResponse(["get" => "/list"]);
+        $path = "/www/storage/app";
+        $list = array_map(function($item) use ($path){
+            return [
+                "name"  => trim(str_replace($path, "", $item), "/"),
+                "size"  => filesize($item),
+                "date"  => fileatime($item),
+            ];
+        }, glob("$path/*.*"));
+
+        usort($list, function($a, $b){
+            return $a['date'] < $b['date'];
+        });
+
+        return new \Illuminate\Http\JsonResponse($list);
+    }
+
+    public function delete(string $filename)
+    {
+        $filename = urldecode($filename);
+        $fullpath = "/www/storage/app/$filename";
+
+        if(is_file($fullpath)){
+            if(strpos($fullpath, "/www/storage/app") === 0){
+                $filename = basename($fullpath);
+                $dirname = dirname($fullpath);
+                rename($fullpath, "$dirname/deleted/$filename");
+            }
+        }
+
+        return new \Illuminate\Http\JsonResponse(["is_deleted" => !is_file($fullpath)]);
+    }
+
+    public function download(string $filename)
+    {
+        $filename = urldecode($filename);
+        $fullpath = "/www/storage/app/$filename";
+
+        if(is_file($fullpath)){
+            error_log("downloading file: $fullpath");
+
+            $size = filesize($fullpath);
+            $mimeType = mime_content_type($fullpath);
+
+            // Output headers.
+            header("Cache-Control: private");
+            header("Content-Type: $mimeType");
+            header("Content-Length: $size");
+            header("Content-Disposition: attachment; filename=$filename");
+
+            // Output file.
+            readfile ($fullpath);
+            exit();
+        }else{
+            error_log("filename does not exist '$filename'");
+
+            abort(500, "File was not found");
+        }
     }
 }
 
