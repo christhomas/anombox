@@ -10,9 +10,15 @@ class Authenticate
 {
     public function __construct()
     {
-        if(empty(session_id())){
-            session_start();
+    }
+
+    public function unauthorized()
+    {
+        if(!empty(session_id())){
+            session_destroy();
         }
+
+        abort(401);
     }
 
     public function forbidden()
@@ -34,11 +40,14 @@ class Authenticate
 	 */
 	public function handle($request, Closure $next)
 	{
+        $authorization = $request->header('Authorization') ?? $request->get('token');
+
+        error_log(json_encode([$authorization, $_SESSION]));
+
         if(!array_key_exists('token', $_SESSION)){
-            $this->forbidden();
+            $this->unauthorized();
         }
 
-        $authorization = $request->header('Authorization');
 	    if($authorization !== $_SESSION['token']){
             $this->forbidden();
         }
