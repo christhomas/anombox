@@ -1,0 +1,16 @@
+version: '3.4'
+
+networks:
+  backbone:
+    external:
+      name: backbone
+
+services:
+  nginx:
+    image: nginx:latest
+    networks:
+      backbone:
+    volumes:
+      - .:/usr/share/nginx/html:ro
+    environment:
+      - VIRTUAL_HOST=testing.antimatter-studios.develop

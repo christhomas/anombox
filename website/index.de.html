@@ -1,0 +1,358 @@
+<div class="boldgrid-section">
+<div class="container">
+<div class="row">
+<div class="col-md-10 col-md-push-1 col-xs-12 col-sm-12">
+<main>
+<script type="text/javascript">
+// <!--
+jQuery(document).ready(function() {
+    var amap = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 3, 2, 0, 0, 2, 3, 0, 4, 0, 2, 3, 2, 0, 3, 0];
+    var j = jQuery;
+    var data = {article: 1, section: "", language: ""};
+    var text = [
+       "Sie müssen ein Video anhängen",
+       "Sie haben die Sprache des Videos nicht eingegeben",
+       "Datei-Upload fehlgeschlagen, bitte versuchen Sie es erneut.",
+       "Vielen Dank für Ihre Einreichung",
+       "Bitte geben Sie eine Sprache mit weniger als 30 Zeichen ein",
+       "Dies war keine gültige Videodatei. Bitte laden Sie nur Videodateien hoch",
+    ];
+
+    var setArticleNumber = function(number){
+      data.article = number;
+      j('.article.number').text(data.article);
+    };
+
+    var setSectionNumber = function(number){
+      if(number == null){
+        data.section = "";
+        j('.section.number').text('--');
+      }else{
+        data.section = number;
+        j('.section.number').text(data.section);
+      }
+    };
+
+    var numberClick = function () {
+        var selectedNumber = j(this).text();
+
+        if(j(this).closest('.dynamic-dropdown').hasClass('article-select')){
+            var sectionDropdown = j('.dynamic-dropdown.section-select');
+            sectionDropdown.find('.the-dropdown').remove();
+            var count = +amap[selectedNumber-1];
+            if(count > 0){
+                sectionDropdown.data('end', count);
+                j(sectionDropdown).each(buildList);
+                setSectionNumber(1);
+            }else{
+                setSectionNumber(null);
+            }
+
+            setArticleNumber(selectedNumber);
+        }else{
+            setSectionNumber(selectedNumber);
+        }
+
+        console.log({updated:data});
+        j(this).closest('.the-dropdown').hide();
+    };
+
+    var buildList = function() {
+        var s = j(this).data('start');
+        var e = j(this).data('end');
+
+        var p = j("<div" + "/>").addClass('the-dropdown').css({
+            "position": "absolute",
+            "display": "none",
+            "left": "0px",
+            "top": "0px",
+            "width": "100%",
+            "maxHeight": "300px",
+            "overflow-y": "scroll",
+            "backgroundColor": "white",
+            "textAlign": "right",
+            "zIndex": "3",
+            "border": "2px solid black",
+        });
+        for (let a = s; a <= e; a++) {
+            var n = j("<div" + "/>").css({
+                "padding-right": "1rem",
+                "lineHeight": "2rem",
+            }).text(a);
+            n.on('mouseenter', function () {
+                j(this).css('backgroundColor', '#cccccc');
+            });
+            n.on('mouseleave', function () {
+                j(this).css('backgroundColor', 'white');
+            });
+            n.on('click', numberClick);
+            p.append(n);
+        }
+        j(this).append(p);
+        j(this)
+            .on("mouseenter", function () {
+                p.show()
+            })
+            .on("mouseleave", function () {
+                p.hide();
+            });
+    }
+
+    j("button").on("click", function(e){
+        var formData = new FormData();
+        var file = j("input.upload-video")[0].files[0];
+        if(file == undefined){
+          j(".feedback").text(text[0]);
+          return;
+        }
+        if(file.type.match(/^video/) == null){
+          j(".feedback").text(text[5]);
+          return;
+        }
+
+        var language = j("input.language-select").val();
+        if(language.length == 0){
+          j(".feedback").text(text[1]);
+          return;
+        }
+        if(language.length > 30){
+          j(".feedback").text(text[4]);
+          return;
+        }
+
+        formData.append("video", file);
+        formData.append("article", data.article);
+        formData.append("section", data.section);
+        formData.append("language", language);
+
+        e.preventDefault();
+        j.ajax({
+            xhr: function(){
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress", function(evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = ((evt.loaded / evt.total) * 100);
+                        j(".feedback").text(percentComplete.toFixed(2) + "% complete");
+                    }
+                }, false);
+                return xhr;
+            },
+            type: 'POST',
+            url: 'https://antimatter-studios.com/anombox/v1/upload',
+            data: formData,
+            contentType: false,
+            cache: false,
+            processData:false,
+            beforeSend: function(){
+                j(".feedback").text("");
+            },
+            error:function(){
+                j(".feedback").text(text[2]);
+            },
+            success: function(response){
+                j(".feedback").text(text[3]);
+                console.log({response});
+            }
+        });
+    });
+
+    j(".dynamic-dropdown.article-select").each(buildList);
+});
+// -->
+</script>
+    <header>
+        <span><a href="https://wirfuerhongkong.org/events/marathon-reading/" style="margin-right: 1rem;">English</a><a href="https://wirfuerhongkong.org/events/marathon-reading-chinese/">中文</a></span>
+        <h1>Marathon Lesung für die Demokratiebewegung in Hongkong</h1>
+    </header>
+
+    <article style="margin-bottom:3rem">
+        <div>
+            <img style="width:100%" src="https://wirfuerhongkong.org/wp-content/uploads/2020/08/20.ilb_MarathonReading_FB_EventCoverPhoto_1920x1080px_20200827-01.jpeg" />
+        </div>
+        <p>Das <b>Internationale Literaturfestival Berlin [ilb]</b> veranstaltet am <b>9. September 2020</b> weltweit Lesungen für Meinungs- und Versammlungsfreiheit. Die Lesung der 30 Artikel der 
+          <b>Allgemeinen Erklärung der Menschenrechte</b> soll auf die Situation der Meinungsfreiheit, der Versammlungsfreiheit und der Menschenrechte in Hongkong aufmerksam machen.<br/>
+          <br/>
+          Die Menschenrechte sind im ‚Basic Law‘, dem Hongkonger Grundgesetz fest verankert. Seit dem letzten Jahr aber müssen wir sehen, dass die Ausübung der Grundrechte in Hongkong mit stetig wachsender 
+          Angst verbunden ist. Wir können dieser Entwicklung nicht weiter zusehen; die Lesung der <b>Allgemeinen Erklärung der Menschenrechte<b/> soll deshalb ein Zeichen setzen, auf die Situation in Hongkong 
+          aufmerksam machen und Unterstützung für die Menschen in Hongkong ausdrücken.
+        </p>
+    </article>
+
+    <article style="margin-bottom:3rem">
+        <h2 style="border-top:0.5rem solid #e3051b; padding-top:1rem">UM AN DER AKTION TEILZUNEHMEN:</h2>
+        <ol style="list-style: none; counter-reset: form-counter; position: relative; padding-left: 3rem; margin-bottom: 1rem;">
+            <li style="counter-increment: form-counter; border-left: 0.5rem solid #e3051b; margin-left: 0rem; padding-bottom: 1rem; padding-left: 2rem;">
+                Wähle <b>einen</b> Artikel oder <b>einen Abschnitt</b> der 30 Artikel der <b>Allgemeinen Erklärung der Menschenrechte<b/> aus.
+            </li>
+
+            <li style="counter-increment: form-counter; border-left: 0.5rem solid #e3051b; margin-left: 0rem; padding-bottom: 1rem; padding-left: 2rem; color: #e3051b">
+                Nimm ein Video vom Himmel über Dir auf und lese dabei den Artikel oder den Abschnitt, den Du ausgewählt hast. Du kannst in einer beliebigen Sprache Deiner Wahl lesen; bitte gib Artikel/Abschnitt und die Sprache, in der Du liest, im Dateinamen an.
+            </li>
+
+            <li style="counter-increment: form-counter; border-left: 0.5rem solid #e3051b; margin-left: 0rem; padding-bottom: 1rem; padding-left : 2rem;">
+                <p style="margin: 0;">
+                  Fülle bitte das unten angehängte Formular aus und lade Dein Video <span style="color:#e3051b">*</span> with <br/>file name like this: Article_Section_Language.mp4.<br/>
+                  Example (ohne Abschnitt): 01_catalan.mp4<br/>
+                  Example (mit Abschnitt): 11_02_cantonese.mp4
+                </p>
+
+                <form id="video-submission" method="post" style="margin-top:1rem">
+                    <div style="position: relative; border: 2px solid black; background: white; margin-bottom: 0.3rem; line-height: 2rem;" class="article-select dynamic-dropdown" data-start="1" data-end="30">
+                        <label style="position: relative; z-index: 2; line-height: 2rem; padding: 0 1rem;">Artikel Nr.</label><span class="article number" style="border: 0; position: absolute; right: 4rem;color: red">1</span><span style="position: absolute; display: block; top: 0; right: 0;border-left: 2px solid black;z-index: 2; width: 50px; text-align: center;">30</span>
+                    </div>
+                    <div style="position: relative; background: white; border: 2px solid black; margin-bottom: 0.3rem; line-height: 2rem;" class="section-select dynamic-dropdown" data-start="1" data-end="4">
+                        <label style="position: relative; z-index: 2; line-height: 2rem; padding: 0 1rem;">Abschnitt Nr.</label><span class="section number" style="position: absolute; display: block; top: 0; right: 0;border-left: 2px solid black;z-index: 2; width: 50px; text-align: center;">--</span>
+                    </div>
+                    <div style="background: white; border: 2px solid black; margin-bottom: 0.3rem; line-height: 2rem;">
+                        <label style="position: absolute; z-index: 2; line-height: 2rem; padding: 0 1rem;">Sprache</label><input class="language-select" style="border: 0; position: relative; width: 100%; text-align: right; padding-right: 2rem;" type="text" name="language" />
+                    </div>
+                    <div style="background: white; border: 2px solid black; margin-bottom: 0.3rem; line-height: 2rem;">
+                        <label style="position: relative; display:inline-block; z-index: 2; line-height: 2rem; padding: 0 1rem;">Hochgeladene Datei</label><input style="border: 0; position: relative; display:inline-block; text-align: right; padding-right: 2rem;" class="upload-video" type="file" name="video" /><span style="position:absolute;right:1rem">Size: 1-200MB</span>
+                    </div>
+                </form>
+
+                <p  style="margin: 2rem 0; color: #e3051b">
+                    * mit dem Hochladen einer Videodatei nimmst Du an der Marathon Lesung teil und erklärst Dich damit einverstanden, dass die von Dir hochgeladene Videodatei mit anderen zu diesem Zweck auf die gleiche Art erstellten und eingereichten Videodateien wie beschrieben genutzt und veröffentlicht wird.  Die von Dir hochgeladene Originalvideodatei wird nach dem Einfügen in die Marathon-Lesung gelöscht und wird ab dann als Teil der Marathon Lesung veröffentlicht.
+                </p>
+
+                <p style="margin: 0;">
+                    Einreichungen sind bis zum 06.September 2020 möglich.<br/>
+                    <br/>
+                    Die eingereichten Videos werden von uns untertitelt und zu einer Marathon Lesung der <b>Allgemeinen Erklärung der Menschenrechte</b> für die Demokratiebewegung in Hongkong zusammengefügt.<br/>
+                    <br/>
+                    Mit der Eröffnung des <b>Internationalen Literaturfestivals Berlin [ilb]</b> am 09.September wird die Marathon Lesung online und an verschiedenen Orten öffentlich gezeigt.<br/>
+                    <br/>
+                    Bitte leite diesen Aufruf weiter und unterstütze aktiv und solidarisch die Menschen in Hongkong dabei, ihre Grundrechte zu verteidigen.<br/>
+                    <br/>
+                    Kontaktanfrage: <b><a href="mailto:weltweite.lesung.berlin@gmail.com">weltweite.lesung.berlin@gmail.com</a></b>
+                </p>
+            </li>
+        </ol>
+        <div>
+            <button style="margin-left: 5.5rem; font-weight: bold; font-size: 1rem; text-transform: uppercase;  background-color: #e3051b; color: white; padding: 0.5rem 3rem;">Submit</button><span class="feedback" style="margin-left: 1rem"></span>
+        </div>
+    </article>
+
+    <article style="margin-bottom:3rem">
+        <h2 style="border-top:0.5rem solid black; padding-top:1rem">Allgemeine Erklärung der Menschenrechte</h2>
+
+        <div class="articles" style="height: 100vh; overflow-y: scroll; margin-bottom: 2rem; border-left: 0.3rem solid black; padding-left: 1rem; margin-left: 2rem">
+                            <h4>Artikel 1</h4>
+                            <p>Alle Menschen sind frei und gleich an Würde und Rechten geboren. Sie sind mit Vernunft und Gewissen begabt und sollen einander im Geiste der Brüderlichkeit begegnen.</p>
+                            <h4>Artikel 2</h4>
+                            <p>Jeder hat Anspruch auf alle in dieser Erklärung verkündeten Rechte und Freiheiten, ohne irgendeinen Unterschied, etwa nach Rasse, Hautfarbe, Geschlecht, Sprache, Religion, politischer oder sonstiger Anschauung, nationaler oder sozialer Herkunft, Vermögen, Geburt oder sonstigem Stand.
+                                Des weiteren darf kein Unterschied gemacht werden auf Grund der politischen, rechtlichen oder internationalen Stellung des Landes oder Gebietes, dem eine Person angehört, gleichgültig ob dieses unabhängig ist, unter Treuhandschaft steht, keine Selbstregierung besitzt oder sonst in seiner Souveränität eingeschränkt ist.</p>
+                            <h4>Artikel 3</h4>
+                            <p>Jeder hat das Recht auf Leben, Freiheit und Sicherheit der Person.</p>
+                            <h4>Artikel 4</h4>
+                            <p>Niemand darf in Sklaverei oder Leibeigenschaft gehalten werden; Sklaverei und Sklavenhandel in allen ihren Formen sind verboten.</p>
+                            <h4>Artikel 5</h4>
+                            <p>Niemand darf der Folter oder grausamer, unmenschlicher oder erniedrigender Behandlung oder Strafe unterworfen werden.</p>
+                            <h4>Artikel 6</h4>
+                            <p>Jeder hat das Recht, überall als rechtsfähig anerkannt zu werden.</p>
+                            <h4>Artikel 7</h4>
+                            <p>Alle Menschen sind vor dem Gesetz gleich und haben ohne Unterschied Anspruch auf gleichen Schutz durch das Gesetz. Alle haben Anspruch auf gleichen Schutz gegen jede Diskriminierung, die gegen diese Erklärung verstößt, und gegen jede Aufhetzung zu einer derartigen Diskriminierung.</p>
+                            <h4>Artikel 8</h4>
+                            <p>Jeder hat Anspruch auf einen wirksamen Rechtsbehelf bei den zuständigen innerstaatlichen Gerichten gegen Handlungen, durch die seine ihm nach der Verfassung oder nach dem Gesetz zustehenden Grundrechte verletzt werden.</p>
+                            <h4>Artikel 9</h4>
+                            <p>Niemand darf willkürlich festgenommen, in Haft gehalten oder des Landes verwiesen werden.</p>
+                            <h4>Artikel 10</h4>
+                            <p>Jeder hat bei der Feststellung seiner Rechte und Pflichten sowie bei einer gegen ihn erhobenen strafrechtlichen Beschuldigung in voller Gleichheit Anspruch auf ein gerechtes und öffentliches Verfahren vor einem unabhängigen und unparteiischen Gericht.</p>
+                            <h4>Artikel 11</h4>
+                            <ol>
+                                <li>Jeder, der einer strafbaren Handlung beschuldigt wird, hat das Recht, als unschuldig zu gelten, solange seine Schuld nicht in einem öffentlichen Verfahren, in dem er alle für seine Verteidigung notwendigen Garantien gehabt hat, gemäß dem Gesetz nachgewiesen ist.</li>
+                                <li>Niemand darf wegen einer Handlung oder Unterlassung verurteilt werden, die zur Zeit ihrer Begehung nach innerstaatlichem oder internationalem Recht nicht strafbar war. Ebenso darf keine schwerere Strafe als die zum Zeitpunkt der Begehung der strafbaren Handlung angedrohte Strafe verhängt werden.</li>
+                            </ol>
+                            <h4>Artikel 12</h4>
+                            <p>Niemand darf willkürlichen Eingriffen in sein Privatleben, seine Familie, seine Wohnung und seinen Schriftverkehr oder Beeinträchtigungen seiner Ehre und seines Rufes ausgesetzt werden. Jeder hat Anspruch auf rechtlichen Schutz gegen solche Eingriffe oder Beeinträchtigungen.</p>
+                            <h4>Artikel 13</h4>
+                            <ol>
+                                <li>Jeder hat das Recht, sich innerhalb eines Staates frei zu bewegen und seinen Aufenthaltsort frei zu wählen.</li>
+                                <li>Jeder hat das Recht, jedes Land, einschließlich seines eigenen, zu verlassen und in sein Land zurückzukehren.</li>
+                            </ol>
+                            <h4>Artikel 14</h4>
+                            <ol>
+                                <li>Jeder hat das Recht, in anderen Ländern vor Verfolgung Asyl zu suchen und zu genießen.</li>
+                                <li>Dieses Recht kann nicht in Anspruch genommen werden im Falle einer Strafverfolgung, die tatsächlich auf Grund von Verbrechen nichtpolitischer Art oder auf Grund von Handlungen erfolgt, die gegen die Ziele und Grundsätze der Vereinten Nationen verstoßen.</li>
+                            </ol>
+                            <h4>Artikel 15</h4>
+                            <ol>
+                                <li>Jeder hat das Recht auf eine Staatsangehörigkeit.</li>
+                                <li>Niemandem darf seine Staatsangehörigkeit willkürlich entzogen noch das Recht versagt werden, seine Staatsangehörigkeit zu wechseln.</li>
+                            </ol>
+                            <h4>Artikel 16</h4>
+                            <ol>
+                                <li>Heiratsfähige Männer und Frauen haben ohne jede Beschränkung auf Grund der Rasse, der Staatsangehörigkeit oder der Religion das Recht, zu heiraten und eine Familie zu gründen. Sie haben bei der Eheschließung, während der Ehe und bei deren Auflösung gleiche Rechte.</li>
+                                <li>Eine Ehe darf nur bei freier und uneingeschränkter Willenseinigung der künftigen Ehegatten geschlossen werden.</li>
+                                <li>Die Familie ist die natürliche Grundeinheit der Gesellschaft und hat Anspruch auf Schutz durch Gesellschaft und Staat.</li>
+                            </ol>
+                            <h4>Artikel 17</h4>
+                            <ol>
+                                <li>Jeder hat das Recht, sowohl allein als auch in Gemeinschaft mit anderen Eigentum innezuhaben.</li>
+                                <li>Niemand darf willkürlich seines Eigentums beraubt werden.</li>
+                            </ol>
+                            <h4>Artikel 18</h4>
+                            <p>Jeder hat das Recht auf Gedanken-, Gewissens- und Religionsfreiheit; dieses Recht schließt die Freiheit ein, seine Religion oder seine Weltanschauung zu wechseln, sowie die Freiheit, seine Religion oder seine Weltanschauung allein oder in Gemeinschaft mit anderen, öffentlich oder privat durch Lehre, Ausübung, Gottesdienst und Kulthandlungen zu bekennen.</p>
+                            <h4>Artikel 19</h4>
+                            <p>Jeder hat das Recht auf Meinungsfreiheit und freie Meinungsäußerung; dieses Recht schließt die Freiheit ein, Meinungen ungehindert anzuhängen sowie über Medien
+                                jeder Art und ohne Rücksicht auf Grenzen Informationen und Gedankengut zu suchen, zu empfangen und zu verbreiten.</p>
+                            <h4>Artikel 20</h4>
+                            <ol>
+                                <li>Alle Menschen haben das Recht, sich friedlich zu versammeln und zu Vereinigungen zusammenzuschließen.</li>
+                                <li>Niemand darf gezwungen werden, einer Vereinigung anzugehören.</li>
+                            </ol>
+                            <h4>Artikel 21</h4>
+                            <ol>
+                                <li>Jeder hat das Recht, an der Gestaltung der öffentlichen Angelegenheiten seines Landes unmittelbar oder durch frei gewählte Vertreter mitzuwirken.</li>
+                                <li>Jeder hat das Recht auf gleichen Zugang zu öffentlichen Ämtern in seinem Lande.</li>
+                                <li>Der Wille des Volkes bildet die Grundlage für die Autorität der öffentlichen Gewalt; dieser Wille muß durch regelmäßige, unverfälschte, allgemeine und gleiche Wahlen mit geheimer Stimmabgabe oder einem gleichwertigen freien Wahlverfahren zum Ausdruck kommen.</li>
+                            </ol>
+                            <h4>Artikel 22</h4>
+                            <p>Jeder hat als Mitglied der Gesellschaft das Recht auf soziale Sicherheit und Anspruch darauf, durch innerstaatliche Maßnahmen und internationale Zusammenarbeit sowie unter Berücksichtigung der Organisation und der Mittel jedes Staates in den Genuß der wirtschaftlichen, sozialen und kulturellen Rechte zu gelangen, die für seine Würde und die freie Entwicklung seiner Persönlichkeit unentbehrlich sind.</p>
+                            <h4>Artikel 23</h4>
+                            <ol>
+                                <li>Jeder hat das Recht auf Arbeit, auf freie Berufswahl, auf gerechte und befriedigende Arbeitsbedingungen sowie auf Schutz vor Arbeitslosigkeit.</li>
+                                <li>Jeder, ohne Unterschied, hat das Recht auf gleichen Lohn für gleiche Arbeit.</li>
+                                <li>Jeder, der arbeitet, hat das Recht auf gerechte und befriedigende Entlohnung, die ihm und seiner Familie eine der menschlichen Würde entsprechende Existenz sichert, gegebenenfalls ergänzt durch andere soziale Schutzmaßnahmen.</li>
+                                <li>Jeder hat das Recht, zum Schutze seiner Interessen Gewerkschaften zu bilden und solchen beizutreten.</li>
+                            </ol>
+                            <h4>Artikel 24</h4>
+                            <p>Jeder hat das Recht auf Erholung und Freizeit und insbesondere auf eine vernünftige Begrenzung der Arbeitszeit und regelmäßigen bezahlten Urlaub.</p>
+                            <h4>Artikel 25</h4>
+                            <ol>
+                                <li>Jeder hat das Recht auf einen Lebensstandard, der seine und seiner Familie Gesundheit und Wohl gewährleistet, einschließlich Nahrung, Kleidung, Wohnung, ärztliche Versorgung und notwendige soziale Leistungen, sowie das Recht auf Sicherheit im Falle von Arbeitslosigkeit, Krankheit, Invalidität oder Verwitwung, im Alter sowie bei anderweitigem Verlust seiner Unterhaltsmittel durch unverschuldete Umstände.</li>
+                                <li>Mütter und Kinder haben Anspruch auf besondere Fürsorge und Unterstützung. Alle Kinder, eheliche wie außereheliche, genießen den gleichen sozialen Schutz.</li>
+                            </ol>
+                            <h4>Artikel 26</h4>
+                            <ol>
+                                <li>Jeder hat das Recht auf Bildung. Die Bildung ist unentgeltlich, zum mindesten der Grundschulunterricht und die grundlegende Bildung. Der Grundschulunterricht ist
+                                    obligatorisch. Fach- und Berufsschulunterricht müssen allgemein verfügbar gemacht werden, und der Hochschulunterricht muß allen gleichermaßen entsprechend ihren Fähigkeiten offenstehen.</li>
+                                <li>Die Bildung muß auf die volle Entfaltung der menschlichen Persönlichkeit und auf die Stärkung der Achtung vor den Menschenrechten und Grundfreiheiten gerichtet sein. Sie muß zu Verständnis, Toleranz und Freundschaft zwischen allen Nationen und allen rassischen oder religiösen Gruppen beitragen und der Tätigkeit der Vereinten Nationen für die Wahrung des Friedens förderlich sein.</li>
+                                <li>Die Eltern haben ein vorrangiges Recht, die Art der Bildung zu wählen, die ihren Kindern zuteil werden soll.</li>
+                            </ol>
+                            <h4>Artikel 27</h4>
+                            <ol>
+                                <li>Jeder hat das Recht, am kulturellen Leben der Gemeinschaft frei teilzunehmen, sich an den Künsten zu erfreuen und am wissenschaftlichen Fortschritt und dessen Errungenschaften teilzuhaben.</li>
+                                <li>Jeder hat das Recht auf Schutz der geistigen und materiellen Interessen, die ihm als Urheber von Werken der Wissenschaft, Literatur oder Kunst erwachsen.</li>
+                            </ol>
+                            <h4>Artikel 28</h4>
+                            <p>Jeder hat Anspruch auf eine soziale und internationale Ordnung, in der die in dieser Erklärung verkündeten Rechte und Freiheiten voll verwirklicht werden können.</p>
+                            <h4>Artikel 29</h4>
+                            <ol>
+                                <li>Jeder hat Pflichten gegenüber der Gemeinschaft, in der allein die freie und volle Entfaltung seiner Persönlichkeit möglich ist.</li>
+                                <li>Jeder ist bei der Ausübung seiner Rechte und Freiheiten nur den Beschränkungen unterworfen, die das Gesetz ausschließlich zu dem Zweck vorsieht, die Anerkennung und Achtung der Rechte und Freiheiten anderer zu sichern und den gerechten Anforderungen der Moral, der öffentlichen Ordnung und des allgemeinen Wohles in einer demokratischen Gesellschaft zu genügen.</li>
+                                <li>Diese Rechte und Freiheiten dürfen in keinem Fall im Widerspruch zu den Zielen und Grundsätzen der Vereinten Nationen ausgeübt werden.</li>
+                            </ol>
+                            <h4>Artikel 30</h4>
+                            <p>Keine Bestimmung dieser Erklärung darf dahin ausgelegt werden, daß sie für einen Staat, eine Gruppe oder eine Person irgendein Recht begründet, eine Tätigkeit auszuüben oder eine Handlung zu begehen, welche die Beseitigung der in dieser Erklärung verkündeten Rechte und Freiheiten zum Ziel hat.</p>
+        </div>
+    </article>
+
+    <article style="margin-bottom: 3rem">
+        <p style="text-align: center"><i>::Credit:: Organisers of this Marathon Reading would like to thank "Wir fr Hong Kong " for hosting this submission portal.</i></p>
+        <div><img style="width:100%" src="https://wirfuerhongkong.org/wp-content/uploads/2020/08/video.png" alt=""></div>
+    </article>
+</main>
+</div>
+</div>
+</div>

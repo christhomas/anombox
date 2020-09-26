@@ -1,0 +1,350 @@
+<div class="boldgrid-section">
+<div class="container">
+<div class="row">
+<div class="col-md-10 col-md-push-1 col-xs-12 col-sm-12">
+<main>
+<script type="text/javascript">
+// <!--
+jQuery(document).ready(function() {
+    var amap = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 3, 2, 0, 0, 2, 3, 0, 4, 0, 2, 3, 2, 0, 3, 0];
+    var j = jQuery;
+    var data = {article: 1, section: "", language: ""};
+    var text = [
+      "請上載檔案",
+      "請輸入朗讀的語言",
+      "未能上載檔案，請重試",
+      "上載完成，多謝參與!",
+      "「語言」欄以30字為限.",
+      "檔案格式不符，請上載影像檔案。",
+    ];
+
+    var setArticleNumber = function(number){
+      data.article = number;
+      j('.article.number').text(data.article);
+    };
+
+    var setSectionNumber = function(number){
+      if(number == null){
+        data.section = "";
+        j('.section.number').text('--');
+      }else{
+        data.section = number;
+        j('.section.number').text(data.section);
+      }
+    };
+
+    var numberClick = function () {
+        var selectedNumber = j(this).text();
+
+        if(j(this).closest('.dynamic-dropdown').hasClass('article-select')){
+            var sectionDropdown = j('.dynamic-dropdown.section-select');
+            sectionDropdown.find('.the-dropdown').remove();
+            var count = +amap[selectedNumber-1];
+            if(count > 0){
+                sectionDropdown.data('end', count);
+                j(sectionDropdown).each(buildList);
+                setSectionNumber(1);
+            }else{
+                setSectionNumber(null);
+            }
+
+            setArticleNumber(selectedNumber);
+        }else{
+            setSectionNumber(selectedNumber);
+        }
+
+        console.log({updated:data});
+        j(this).closest('.the-dropdown').hide();
+    };
+
+    var buildList = function() {
+        var s = j(this).data('start');
+        var e = j(this).data('end');
+
+        var p = j("<div" + "/>").addClass('the-dropdown').css({
+            "position": "absolute",
+            "display": "none",
+            "left": "0px",
+            "top": "0px",
+            "width": "100%",
+            "maxHeight": "300px",
+            "overflow-y": "scroll",
+            "backgroundColor": "white",
+            "textAlign": "right",
+            "zIndex": "3",
+            "border": "2px solid black",
+        });
+        for (let a = s; a <= e; a++) {
+            var n = j("<div" + "/>").css({
+                "padding-right": "1rem",
+                "lineHeight": "2rem",
+            }).text(a);
+            n.on('mouseenter', function () {
+                j(this).css('backgroundColor', '#cccccc');
+            });
+            n.on('mouseleave', function () {
+                j(this).css('backgroundColor', 'white');
+            });
+            n.on('click', numberClick);
+            p.append(n);
+        }
+        j(this).append(p);
+        j(this)
+            .on("mouseenter", function () {
+                p.show()
+            })
+            .on("mouseleave", function () {
+                p.hide();
+            });
+    }
+
+    j("button").on("click", function(e){
+        var formData = new FormData();
+        var file = j("input.upload-video")[0].files[0];
+        if(file == undefined){
+          j(".feedback").text(text[0]);
+          return;
+        }
+        if(file.type.match(/^video/) == null){
+          j(".feedback").text(text[5]);
+          return;
+        }
+
+        var language = j("input.language-select").val();
+        if(language.length == 0){
+          j(".feedback").text(text[1]);
+          return;
+        }
+        if(language.length > 30){
+          j(".feedback").text(text[4]);
+          return;
+        }
+
+        formData.append("video", file);
+        formData.append("article", data.article);
+        formData.append("section", data.section);
+        formData.append("language", language);
+
+        e.preventDefault();
+        j.ajax({
+            xhr: function(){
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress", function(evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = ((evt.loaded / evt.total) * 100);
+                        j(".feedback").text(percentComplete.toFixed(2) + "% complete");
+                    }
+                }, false);
+                return xhr;
+            },
+            type: 'POST',
+            url: 'https://antimatter-studios.com/anombox/v1/upload',
+            data: formData,
+            contentType: false,
+            cache: false,
+            processData:false,
+            beforeSend: function(){
+                j(".feedback").text("");
+            },
+            error:function(){
+                j(".feedback").text(text[2]);
+            },
+            success: function(response){
+                j(".feedback").text(text[3]);
+                console.log({response});
+            }
+        });
+    });
+
+    j(".dynamic-dropdown.article-select").each(buildList);
+});
+// -->
+</script>
+    <header>
+        <span><a href="https://wirfuerhongkong.org/events/marathon-reading/" style="margin-right: 1rem;">English</a><a href="https://wirfuerhongkong.org/events/marathon-lesung/">Deutsch</a></span>
+        <h1>為香港民主運動接力朗讀</h1>
+    </header>
+
+    <article style="margin-bottom:3rem">
+        <div>
+            <img style="width:100%" src="https://wirfuerhongkong.org/wp-content/uploads/2020/08/20.ilb_MarathonReading_FB_EventCoverPhoto_1920x1080px_20200827-03.jpeg" />
+        </div>
+        <p><b>柏林國際文學節 [ilb]<b/> 將於<b>2020年9月9日</b>舉行全球朗讀，表達對言論自由和集會自由的支持。這次朗讀旨在引起人們對香港言論自由、集會自由和人權狀況的關注。<br/>
+           <br/>
+           香港人權受基本法保障。過去一年，全球有目共睹，香港人行使基本權利的同時，他們免於恐懼的自由卻被逐步蠶食。除了關注局勢發展，我們亦以接力朗讀<b>《世界人權宣言》</b>，表達對香港人的支持。
+        </p>
+    </article>
+
+    <article style="margin-bottom:3rem">
+        <h2 style="border-top:0.5rem solid #e3051b; padding-top:1rem">加入接力朗讀:</h2>
+        <ol style="list-style: none; counter-reset: form-counter; position: relative; padding-left: 3rem; margin-bottom: 1rem;">
+            <li style="counter-increment: form-counter; border-left: 0.5rem solid #e3051b; margin-left: 0rem; padding-bottom: 1rem; padding-left: 2rem;">
+                從<b>《世界人權宣言》</b>全文30條中，選擇<b>其中一項條文</b>或<b>條文其中一節</b>
+            </li>
+
+            <li style="counter-increment: form-counter; border-left: 0.5rem solid #e3051b; margin-left: 0rem; padding-bottom: 1rem; padding-left: 2rem; color: #e3051b">
+                對着天空拍攝，並朗讀您的選段。您可以使用仼何語言，請在檔案名稱中註明。
+            </li>
+
+            <li style="counter-increment: form-counter; border-left: 0.5rem solid #e3051b; margin-left: 0rem; padding-bottom: 1rem; padding-left : 2rem;">
+                <p style="margin: 0;">
+                  請填妥以下表格並根據以下命名格式將錄像<span style="color:#e3051b">*</span>上載  with <br/>file name like this: Article_Section_Language.mp4.<br/>
+                  Example (without section): 01_catalan.mp4<br/>
+                  Example (with section): 11_02_cantonese.mp4
+                </p>
+
+                <form id="video-submission" method="post" style="margin-top:1rem">
+                    <div style="position: relative; border: 2px solid black; background: white; margin-bottom: 0.3rem; line-height: 2rem;" class="article-select dynamic-dropdown" data-start="1" data-end="30">
+                        <label style="position: relative; z-index: 2; line-height: 2rem; padding: 0 1rem;">條文.</label><span class="article number" style="border: 0; position: absolute; right: 4rem;color: red">1</span><span style="position: absolute; display: block; top: 0; right: 0;border-left: 2px solid black;z-index: 2; width: 50px; text-align: center;">30</span>
+                    </div>
+                    <div style="position: relative; background: white; border: 2px solid black; margin-bottom: 0.3rem; line-height: 2rem;" class="section-select dynamic-dropdown" data-start="1" data-end="4">
+                        <label style="position: relative; z-index: 2; line-height: 2rem; padding: 0 1rem;">段落.</label><span class="section number" style="position: absolute; display: block; top: 0; right: 0;border-left: 2px solid black;z-index: 2; width: 50px; text-align: center;">--</span>
+                    </div>
+                    <div style="background: white; border: 2px solid black; margin-bottom: 0.3rem; line-height: 2rem;">
+                        <label style="position: absolute; z-index: 2; line-height: 2rem; padding: 0 1rem;">語言</label><input class="language-select" style="border: 0; position: relative; width: 100%; text-align: right; padding-right: 2rem;" type="text" name="language" />
+                    </div>
+                    <div style="background: white; border: 2px solid black; margin-bottom: 0.3rem; line-height: 2rem;">
+                        <label style="position: relative; display:inline-block; z-index: 2; line-height: 2rem; padding: 0 1rem;">上載</label><input style="border: 0; position: relative; display:inline-block; text-align: right; padding-right: 2rem;" class="upload-video" type="file" name="video" /><span style="position:absolute;right:1rem">Size: 1-200MB</span>
+                    </div>
+                </form>
+
+                <p  style="margin: 2rem 0; color: #e3051b">
+                    * 透過上載錄像及參與此活動，您即表示同意並授權內容被剪輯、合成到最終片段內，及被公開發佈以作上述用途。在完成製作朗讀片段後，您上傳的檔案將被刪除。
+                </p>
+
+                <p style="margin: 0;">
+                    上載截止日期: <b>2020年9月6日</b><br/>
+                    <br/>
+                    接力朗讀的錄像將於<b>2020年9月9日</b>柏林國際文學節開幕起在網上及多處地點播放。<br/>
+                    <br/>
+                    敬請廣傳，聲援及與香港人並肩捍衛其基本權利。<br/>
+                    <br/>
+                    聯絡及查詢: <b><a href="mailto:weltweite.lesung.berlin@gmail.com">weltweite.lesung.berlin@gmail.com</a></b>
+                </p>
+            </li>
+        </ol>
+        <div>
+            <button style="margin-left: 5.5rem; font-weight: bold; font-size: 1rem; text-transform: uppercase;  background-color: #e3051b; color: white; padding: 0.5rem 3rem;">Submit</button><span class="feedback" style="margin-left: 1rem"></span>
+        </div>
+    </article>
+
+    <article style="margin-bottom:3rem">
+        <h2 style="border-top:0.5rem solid black; padding-top:1rem">世界人權宣言</h2>
+
+        <div class="articles" style="height: 100vh; overflow-y: scroll; margin-bottom: 2rem; border-left: 0.3rem solid black; padding-left: 1rem; margin-left: 2rem">
+            <h4>第 一條</h4>
+                            <p>人人 生 而 自 由,在 尊 嚴 和 權 利 上 一 律平 等。 他 們 賦 有 理 性和 良 心, 並應 以兄 弟關係的精神相對待。</p>
+                            <h4>第 二條</h4>
+                            <p>人 人 有 資 格 享 有 本 宣 言 所 載 的 一 切 權 利 和 自 由, 不分種 族、 膚 色、 性 別、 語 言、 宗 教、 政 治 或 其 他 見 解、 國 籍 或社 會 出 身、 財 產、 出 生 或 其 他 身 分 等 任 何 區 別。 並 且 不 得 因 一 人 所 屬 的 國 家 或 領 土 的 政 治 的、 行 政 的 或 者 國 際 的 地 位之 不 同 而 有 所 區 別, 無 論 該 領土 是獨 立 領 土、 託管 領 土、 非 自治 領 土 或 者 處 於 其 他 任 何 主 權 受 限 制 的 情 況之 下。</p>
+                            <h4>第三條</h4>
+                            <p>人 人 有 權 享 有 生 命、 自 由 和 人 身 安 全。</p>
+                            <h4>第四條</h4>
+                            <p>任 何 人 不 得 使 為 奴 隸 或 奴 役; 。 一切 形式 的奴 隸 制 度 和 奴 隸 買 賣, 均 應 予 以禁 止。</p>
+                            <h4>第五條</h4>
+                            <p>任 何 人 不 得 加 以 酷 刑, 或 施 以 殘忍 的、 不 人 道 的 或 侮 辱 性 的 待 遇 或 刑 罰。</p>
+                            <h4>第六條</h4>
+                            <p>人 人 在 任 何 地 方 有 權 被 承 認 在法 律 前 的 人 格。</p>
+                            <h4>第七條</h4>
+                            <p>法 律 之 前 人 人 平 等,並 有 權 享 受 法 律 的 平 等保 護,不 受 任 何歧 視。 人 人 有 權 享 受 平 等 保 護, 以 免 受 違 反 本 宣 言 的 任 何 歧 視 行 為 以 及 煽 動這 種歧 視 的 任 何 行 為之 害。</p>
+                            <h4>第八條</h4>
+                            <p>任 何 人 當憲 法 或 法 律 所 賦 予 他 的 基 本 權 利 遭 受 侵 害 時,有 權 由 合 格 的 國 家 法 庭 對 這 種 侵 害行 為作 有效 的 補 救。</p>
+                            <h4>第九條</h4>
+                            <p>任 何 人 不 得 加 以 任 意 逮 捕、 拘 禁 或 放 逐。</p>
+                            <h4>第十條</h4>
+                            <p>人 人 完 全 平 等 地 有 權 由 一 個 獨 立 而 無 偏 倚 的法 庭 進 行 公 正 的 和 公開 的審 訊,以 確 定他 的權 利 和義 務 並 判 定 對 他 提 出 的 任 何 刑 事指 控。</p>
+                            <h4>第十 一條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 凡 受 刑 事 控 告 者,在 未 經 獲 得 辯 護 上 所 需的 一切 保 證 的 公 開 審 判 而 依 法 證 實 有罪 以 前, 有 權 被 視為 無罪。</li>
+                                <li>二. 任 何 人 的 任 何 行 為 或 不 行 為,在 其 發 生 時 依 國 家 法 或 國 際 法 均不構成 刑 事 罪 者,不 得 被判 為犯 有 刑 事 罪。 刑 罰 不 得 重 於 犯罪 時 適 用 的 法 律 規 定。</li>
+                            </ol>
+                            <h4>第十 二條</h4>
+                            <p>任 何 人 的 私 生 活、 家 庭、 住 宅 和 通 信 不 得 任 意 幹 涉,他 的 榮 譽 和 名 譽 不 得加 以攻 擊。 人 人 有 權 享 受 法 律 保 護, 以 免 受 這 種 干 涉 或攻 擊。</p>
+                            <h4>第十三條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 人 人 在 各 國境 內 有 權 自 由 遷徙 和 居 住。</li>
+                                <li>二. 人 人 有 權 離 開 任 何 國 家,包 括 其 本 國 在內,並 有 權 返 回 他 的 國家。</li>
+                            </ol>
+                            <h4>第十四條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 人 人 有 權 在 其 他 國 家 尋 求 和 享 受庇 護 以避 免 迫 害。</li>
+                                <li>二. 在 真 正 由 於 非政 治 性 的 罪 行 或 違 背 聯 合 國 的 宗旨 和 原 則 的行 為 而 被 起 訴 的情 況 下, 不 得 援 用 此 種權 利。</li>
+                            </ol>
+                            <h4>第十五條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 人 人 有 權 享 有國 籍。</li>
+                                <li>二. 任 何 人 的 國 籍 不 得 任 意 剝 奪, 亦 不 得 否 認 其 改 變國 籍的 權 利。</li>
+                            </ol>
+                            <h4>第十六條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 成 年 男 女, 不 受種 族、 國 籍 或 宗 教 的 任 何 限 制 有 權 婚 嫁 和 成 立 家 庭。 他 們 在婚姻 方 面, 在結 婚期 間 和 在解 除 婚 約 時, 應 有 平 等 的權 利。</li>
+                                <li>二. 只 有 經男 女 雙 方 的 自 由 和 完 全 的 同 意, 才 能締 婚。</li>
+                                <li>三. 家 庭 是 天 然 的 和 基 本 的 社 會 單 元, 並應 受社 會 和 國 家 的 保  護。</li>
+                            </ol>
+                            <h4>第十 七條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 人 人 得 有 單 獨 的 財 產 所 有 權 以 及 同 他 人 合 有 的 所 有 權。</li>
+                                <li>二. 任 何 人 的 財 產 不 得 任 意 剝 奪。</li>
+                            </ol>
+                            <h4>第 十八 條</h4>
+                            <p>人 人 有 思 想、 良 心 和 宗 教 自 由 的 權 利; 。 此 項 權 利 包 括 改 變 他 的 宗 教 或 信 仰 的 自 由, 以 及 單 獨 或集 體、 公 開 或 秘 密 地 以 教 義、 實 踐、 禮 拜 和 戒 律 表 示 他 的 宗 教 或 信 仰 的 自 由。</p>
+                            <h4>第 十九條</h4>
+                            <p>人 人 有 權 享 有 主 張 和 發 表 意 見 的 自 由; 。 此 項 權 利 包 括 持 有 主 張 而 不 受 干 涉 的 自 由,和 通 過 任 何媒 介和不論 國 界 尋 求、 接 受 和傳 遞 消 息 和思 想 的自 由。</p>
+                            <h4>第二十條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 人 人 有 權 享 有 和 平 集 會 和 結 社 的 自 由。</li>
+                                <li>二. 任 何 人 不 得 迫 使 隸 屬於 某 一團 體。</li>
+                            </ol>
+                            <h4>第二 十 一 條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 人 人 有 直 接 或 通 過 自 由 選擇 的 代 表參 與 治 理 本 國 的 權 利。</li>
+                                <li>二. 人 人 有 平 等 機 會參 加 本 國 公務的權 利。</li>
+                                <li>三. 人 民 的 意 志 是 政 府 權 力 的 基 礎;  這 一 意 志 應 以 定 期 的 和 真 正 的 選 舉 予 以 表 現, 而 選 舉 應依 據普 遍 和 平等 的投 票 權, 並 以 不 記 名 投 票 或 相 當 的自 由投 票 程 序 進 行。</li>
+                            </ol>
+                            <h4>第 二 十 二 條</h4>
+                            <p>每 個 人, 作 為 社 會 的一 員,有 權 享 受 社會 保障,並 有 權 享 受 他 的 個 人 尊 嚴 和 人 格 的 自 由 發 展 所 必 需 的經 濟、 社 會 和 文 化 方 面 各 種 權 利 的 實 現,這 種 實 現 是 通 過 國 家努 力和 國 際 合 作 並 依 照 各 國 的 組 織 和 資 源 情 況。</p>
+                            <h4>第二十三條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 人 人 有 權 工 作、 自 由 選 擇 職 業、 享 受 公 正 和 合 適 的 工 作 條 件 並 享 受 免 於 失 業 的 保 障。</li>
+                                <li>二. 人 人 有 同 工 同酬 的 權 利, 不 受 任 何歧 視。</li>
+                                <li>三. 每 一 個 工 作 的 人,有 權 享 受 公 正 和 合 適 的報 酬,保 證 使 他 本 人 和 家 屬 有 一 個 符 合 人 的生 活條 件, 必 要 時 並 輔 以 其他 方式 的 社 會 保 障。</li>
+                                <li>四. 人 人 有 為 維 護 其 利 益 而 組 織 和參 加 工 會的 權 利。</li>
+                            </ol>
+                            <h4>第二 十 四 條</h4>
+                            <p>人 人 有 享 有 休息和 閒暇的 權 利,包 括 工 作 時 間 有 合 理 限 制 和 定期 給薪 休假的權 利。</p>
+                            <h4>第二十五條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 人 人 有 權 享 受 為 維 持 他 本 人 和 家 屬 的 健 康 和福 利 所 需 的 生 活 水 准,包 括 食物、 衣 著、 住 房、 醫 療和 必 要 的 社 會 服 務; 。 在 遭 到 失 業、 疾 病、 殘 廢、 守 寡、 衰 老 或 在 其 他不 能 控 制 的情 況 下 喪 失 謀 生 能 力 時,有 權 享 受保 障。</li>
+                                <li>二. 母 親和 兒 童 有 權 享 受 特 別 照 顧 和 協 助。 一 切 兒 童, 無 論 婚 生 或 非婚 生, 都 應 享 受 同 樣 的 社 會保 護。</li>
+                            </ol>
+                            <h4>第二十六 條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 人 人 都 有 受 教 育 的 權 利,教 育 應 當 免費, 至 少 在 初 級 和 基 本 階 段 應 如此。 初級 教 育應 屬義務性質。 技 術 和 職 業 教 育 應 普遍設 立。 高 等 教 育 應 根 據 成 績 而 對 一 切 人 平 等 開 放。</li>
+                                <li>二. 教 育的目 的 在 於 充 分 發 展 人 的 個 性 並 加 強 對 人 權 和 基 本 自 由 的 尊 重。 教 育 應 促 進 各 國、 各 種 族 或 各 宗 教 集 團 間 的 了 解、 容 忍 和 友 誼,並 應 促 進 聯 合 國 維 護 和 平的 各項 活 動。</li>
+                                <li>三. 父 母 對 其 子 女 所 應 受 的 教 育 的 種類,有 優 先 選 擇 的權 利。</li>
+                            </ol>
+                            <h4>第二十七 條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 人 人 有 權 自 由參 加 社 會 的 文 化 生 活,享 受 藝術,並 分 享 科 學 進 步 及 其 產 生 的 福利。</li>
+                                <li>二. 人 人 對 由 於 他 所 創 作 的 任 何 科 學、 文 學 或 美 術 作 品 而 產 生 的 精 神 的 和 物質 的 利 益,有 享 受 保護 的權 利。</li>
+                            </ol>
+                            <h4>第 二 十 八 條</h4>
+                            <p>人 人 有 權 要 求 一 種 社 會 的 和 國 際 的 秩 序,在 這 種 秩序 中,本 宣 言 所 載 的 權 利 和 自 由 能 獲 得 充 分實 現。</p>
+                            <h4>第二 十九 條</h4>
+                            <ol style="list-style: none">
+                                <li>一. 人 人 對社 會 負 有 義 務, 因 為 只有 在社 會 中 他 的 個 性 才 可 能 得 到 自 由 和充 分 的 發 展。</li>
+                                <li>二. 人 人 在 行 使 他 的 權 利 和 自 由 時, 只 受 法 律 所 確 定 的 限制, 確 定 此 種 限 制 的 唯 一 目 的 在 於 保 證 對 旁 人 的 權 利 和 自 由 給 予 應 有 的 承 認 和尊 重,並 在 一 個 民 主 的 社 會 中 適 應道 德、 公 共 秩 序 和 普 遍福 利 的 正 當 需 要。</li>
+                                <li>三. 這 些 權 利 和 自 由 的 行 使,無 論 在 任 何 情 形 下 均 不 得 違 背 聯 合 國的 宗旨 和 原 則。</li>
+                            </ol>
+                            <h4>第三 十條</h4>
+                            <p>本 宣 言 的 任 何 條 文, 不 得 解 釋 為 默 許 任 何國 家、 集 團 或 個 人 有 權 進 行 任 何 旨 在 破 壞 本 宣 言 所 載 的 任 何 權 利 和 自 由 的 活 動 或 行 為。</p>
+        </div>
+    </article>
+
+    <article style="margin-bottom: 3rem">
+        <p style="text-align: center"><i>::鳴謝:: 是次接力朗讀籌備小組感謝 "Wir für Hong Kong" 借出版面作收集渠道.</i></p>
+        <div><img style="width:100%" src="https://wirfuerhongkong.org/wp-content/uploads/2020/08/video.png" alt=""></div>
+    </article>
+</main>
+</div>
+</div>
+</div>
